@@ -1,0 +1,106 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Required Packages
+```{r}
+library(tidyverse)
+library(naniar)
+library(ggplot2)
+library(ggmosaic)
+library(ggpubr)
+library(gridExtra)
+library(ggalluvial)
+library(sp)
+library(maps)
+library(mapdata)
+```
+
+Demographic Percentages Tables
+```{r}
+tsex <- as.data.frame(table(demographics$sex)/nrow(demographics)*100); colnames(tsex) <- c('Sex', 'Percent')
+tquals <- as.data.frame(table(demographics$qualifications)/nrow(demographics)*100); colnames(tquals) <- c('Qualifications', 'Percent')
+tbirthcountry <- as.data.frame(table(demographics$birth_country)/nrow(demographics)*100); colnames(tbirthcountry) <- c('Birth Country', 'Percent')
+treligion <- tbirthcountry <- as.data.frame(table(demographics$religion)/nrow(demographics)*100); colnames(treligion) <- c('Religion', 'Percent')
+tclass <- as.data.frame(table(demographics$social_class)/nrow(demographics)*100); colnames(tclass) <- c('Social Class', 'Percent')
+tliving <- as.data.frame(table(demographics$living_status)/nrow(demographics)*100); colnames(tliving) <- c('Living Status', 'Percent')
+tincome <- as.data.frame(table(demographics$annual_income)/nrow(demographics)*100); colnames(tincome) <- c('Annual Income', 'Percent')
+```
+
+
+Age distribution
+```{r}
+ggplot(data = y2016) + geom_bar(aes(x = age), fill = 'cyan4') + labs(title = 'Age Distribution', y = 'Number of Respondents', x = 'Age') + scale_x_continuous(breaks = seq(0, 90, by = 10))
+hist(y2016$age)
+```
+
+Basic demographic analysis between years
+```{r fig.width=10, fig.height=25}
+sex <- ggplot(demographics) + geom_bar(aes(x = year, fill = sex), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Sex Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Sex')
+qual <- ggplot(demographics) + geom_bar(aes(x = year, fill = qualifications), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Qualification Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Qualifications')
+country <- ggplot(demographics) + geom_bar(aes(x = year, fill = birth_country), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Birth Country Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Birth Country') + scale_fill_discrete(labels = c('Australia', 'Non-English Speaking', 'English-Speaking'))
+religion <- ggplot(demographics) + geom_bar(aes(x = year, fill = religion), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Religion Distribution', y = 'Number of Respondents', x = 'Year', fill = 'religion')
+social <- ggplot(demographics) + geom_bar(aes(x = year, fill = social_class), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Class Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Class')
+living <- ggplot(demographics) + geom_bar(aes(x = year, fill = living_status), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Living Status Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Living Status Type')
+income <- ggplot(demographics) + geom_bar(aes(x = year, fill = annual_income), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Annual Income Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Annual Income Bracket')
+
+figuredemo1 <- ggarrange(sex, qual, country, religion, social, living, income, nrow = 8)
+annotate_figure(figuredemo1, top = text_grob('Demographic Graphs Between Years', size = 25))
+```
+
+Basic demographic analysis for both years
+```{r fig.width=7, fig.height=25}
+sex2 <- demographics %>% count(sex) %>% ggplot(aes(x = reorder(sex, -n), y = n, fill = sex)) + geom_bar(stat = 'identity') + labs(title = 'Respondent Sex Distribution', y = 'Number of Respondents', x = element_blank(), fill = 'Sex') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+qual2 <- demographics %>% count(qualifications) %>% ggplot(aes(x = reorder(qualifications, -n), y = n, fill = qualifications)) + geom_bar(stat = 'identity') + labs(title = 'Respondent Qualifications Distribution', y = 'Number of Respondents', x = element_blank(), fill = 'Qualifications') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+country2 <- demographics %>% count(birth_country) %>% ggplot(aes(x = reorder(birth_country, -n), y = n, fill = birth_country)) + geom_bar(stat = 'identity') + labs(title = 'Respondent Birth Country Distribution', y = 'Number of Respondents', x = element_blank(), fill = 'Birth Country') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+religion2 <- demographics %>% count(religion) %>% ggplot(aes(x = reorder(religion, -n), y = n, fill = religion)) + geom_bar(stat = 'identity') + labs(title = 'Respondent Religion Distribution', y = 'Number of Respondents', x = element_blank(), fill = 'Religion') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+social2 <- demographics %>% count(social_class) %>% ggplot(aes(x = reorder(social_class, -n), y = n, fill = social_class)) + geom_bar(stat = 'identity') + labs(title = 'Respondent Social Class Distribution', y = 'Number of Respondents', x = element_blank(), fill = 'Class') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+living2 <- demographics %>% count(living_status) %>% ggplot(aes(x = reorder(living_status, -n), y = n, fill = living_status)) + geom_bar(stat = 'identity') + labs(title = 'Respondent Living Status Distribution', y = 'Number of Respondents', x = element_blank(), fill = 'Living Status Type') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+income2 <- income <- ggplot(demographics) + geom_bar(aes(x = annual_income, fill = annual_income)) + labs(title = 'Respondent Annual Income Distribution', y = 'Number of Respondents', x = element_blank(), fill = 'Annual Income Bracket') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+
+figuredemo2 <- ggarrange(sex2, qual2, country2, religion2, social2, living2, income2, nrow = 8)
+annotate_figure(figuredemo2, top = text_grob('Demographic Graphs', size = 25))
+```
+
+Proportion Plots
+```{r fig.width=7, fig.height=25}
+sex3 <- ggplot(data = tsex, aes(x = Sex, y = Percent, fill = Sex)) + geom_bar(stat = 'identity') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+qual3 <- ggplot(data = tquals, aes(x = Qualifications, y = Percent, fill = Qualifications)) + geom_bar(stat = 'identity') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+country3 <- ggplot(data = tbirthcountry, aes(x = `Birth Country`, y = Percent, fill = `Birth Country`)) + geom_bar(stat = 'identity') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+religion3 <- ggplot(data = treligion, aes(x = Religion, y = Percent, fill = Religion)) + geom_bar(stat = 'identity') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+social3 <- ggplot(data = tclass, aes(x = `Social Class`, y = Percent, fill = `Social Class`)) + geom_bar(stat = 'identity') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+living3 <- ggplot(data = tliving, aes(x = `Living Status`, y = Percent, fill = `Living Status`)) + geom_bar(stat = 'identity') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+income3 <- ggplot(data = tincome, aes(x = `Annual Income`, y = Percent, fill = `Annual Income`)) + geom_bar(stat = 'identity') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+
+figuredemo3 <- ggarrange(sex3, qual3, country3, religion3, social3, living3, income3, nrow = 8)
+annotate_figure(figuredemo3, top = text_grob('Demographic Proportion Graphs', size = 25))
+```
+
+Combined exploratory analysis
+```{r fig.height=10}
+#Adapted from Data Visualisation with R
+majorissuetable <- majorparties %>% group_by(vote_house, issue_importance, sex) %>% count()
+ggplot(data = majorissuetable, aes(axis1 = vote_house, axis2 = issue_importance, y = n)) + geom_alluvium(aes(fill = sex)) + geom_stratum() + geom_text(stat = 'stratum', aes(label = after_stat(stratum))) + scale_x_discrete(limits = c('House Vote', 'Most Important Issue'), expand = c(.1, .1)) + labs(title = 'Survey Data', subtitle = 'Stratified by house vote, sex, and issue importance', y = 'Frequency', fill = 'Sex') + theme_minimal()
+
+majorincometable <- majorparties %>% group_by(annual_income, issue_importance, vote_house) %>% count()
+ggplot(data = majorincometable, aes(axis1 = annual_income, axis2 = issue_importance, y = n)) + geom_alluvium(aes(fill = vote_house)) + geom_stratum() + geom_text(stat = 'stratum', aes(label = after_stat(stratum))) + scale_x_discrete(limits = c('House Vote', 'Most Important Issue'), expand = c(.1, .1)) + labs(title = 'Survey Data', subtitle = 'Stratified by house vote, annual income, and issue importance', y = 'Frequency', fill = 'House Vote') + theme_minimal()
+
+majorqualtable <- majorparties %>% group_by(vote_house, issue_importance, qualifications) %>% count()
+ggplot(data = majorqualtable, aes(axis1 = qualifications, axis2 = issue_importance, y = n)) + geom_alluvium(aes(fill = vote_house)) + geom_stratum() + geom_text(stat = 'stratum', aes(label = after_stat(stratum))) + scale_x_discrete(limits = c('House Vote', 'Most Important Issue'), expand = c(.1, .1)) + labs(title = 'Survey Data', subtitle = 'Stratified by house vote, qualifications, and issue importance', y = 'Frequency', fill = 'Qualifications') + theme_minimal()
+
+twoincometable <- twoparty %>% group_by(annual_income, issue_importance, vote_house) %>% count()
+ggplot(data = twoincometable, aes(axis1 = annual_income, axis2 = issue_importance, y = n)) + geom_alluvium(aes(fill = vote_house)) + geom_stratum() + geom_text(stat = 'stratum', aes(label = after_stat(stratum))) + scale_x_discrete(limits = c('House Vote', 'Most Important Issue'), expand = c(.1, .1)) + labs(title = 'Survey Data', subtitle = 'Stratified by house vote, annual income, and issue importance', y = 'Frequency', fill = 'House Vote') + theme_minimal()
+
+twoqualtable <- twoparty %>% group_by(vote_house, issue_importance, qualifications) %>% count()
+ggplot(data = twoqualtable, aes(axis1 = qualifications, axis2 = issue_importance, y = n)) + geom_alluvium(aes(fill = vote_house)) + geom_stratum() + geom_text(stat = 'stratum', aes(label = after_stat(stratum))) + scale_x_discrete(limits = c('House Vote', 'Most Important Issue'), expand = c(.1, .1)) + labs(title = 'Survey Data', subtitle = 'Stratified by house vote, qualifications, and issue importance', y = 'Frequency', fill = 'Qualifications') + theme_minimal() + scale_fill_manual(values = c('dodgerblue4','red3'))
+```
+
+Postcode Visualisations
+```{r}
+map("worldHires", ylim = c(-45,-11 ), xlim = c(110,160 ), fill = TRUE, col = "lightgrey", mar = c(4.5, 4, 1, 1))
+map.axes()
+
+spplot(Freq_by_Suburb, z = 'Frequency', ylim = c(-45,-11 ), xlim = c(110,160 ))
+```
+

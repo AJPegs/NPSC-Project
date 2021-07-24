@@ -1,0 +1,290 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Required Packages
+```{r}
+library(tidyverse)
+library(naniar)
+library(ggplot2)
+library(ggmosaic)
+library(ggpubr)
+library(gridExtra)
+library(ggalluvial)
+```
+
+Most Important Issues
+```{r fig.height=5, fig.width=15}
+#Axis labels changed using adapted code from http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels
+#Axis limits changed using adapted code from https://www.datanovia.com/en/blog/ggplot-axis-limits-and-scales/https://www.datanovia.com/en/blog/ggplot-axis-limits-and-scales/
+
+par(mfrow = c(1,2))
+
+issue1 <- ggplot(data = importance) + geom_bar(aes(x = issue_importance), fill = 'cyan4') + labs(title = 'Most Important Issue', x = '', y = 'Number of Responses') + scale_x_discrete(labels = c('Taxation', 'Immigration', 'Education', 'Environment', 'Debt', 'Health', 'Refugees', 'Climate', 'Super', 'Economy')) + scale_y_continuous(limits = c(0, 300))
+
+issue2 <- ggplot(data = importance) + geom_bar(aes(x = issue_importance2), fill = 'cyan4') + labs(title = 'Second Most Important Issue', x = '', y = 'Number of Responses') + scale_x_discrete(labels = c('Taxation', 'Immigration', 'Education', 'Environment', 'Debt', 'Health', 'Refugees', 'Climate', 'Super', 'Economy')) + scale_y_continuous(limits = c(0, 300))
+
+figure0 <- ggarrange(issue1, issue2, ncol = 2)
+annotate_figure(figure0, top = text_grob("Voters' Most Important Issues", size = 20))
+```
+
+Mosaic Plots for Issue Importance
+```{r fig.height=5, fig.width=10}
+#All mosaic plots adapted from https://cran.r-project.org/web/packages/ggmosaic/vignettes/ggmosaic.html
+#Legends adapted from https://www.datanovia.com/en/blog/ggplot-legend-title-position-and-labels/
+
+tax <- ggplot(data = importance) + geom_mosaic(aes(x = product(importance_taxation), fill = importance_taxation), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Taxation', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('yellow3', 'azure', 'grey69'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+immigrate <- ggplot(data = importance) + geom_mosaic(aes(x = product(importance_immigration), fill = importance_immigration), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Immigration', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('yellow3', 'azure', 'grey69'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+edu <- ggplot(data = importance) + geom_mosaic(aes(x = product(importance_education), fill = importance_education), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Education', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('yellow3', 'azure', 'grey69'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+env <- ggplot(data = importance) + geom_mosaic(aes(x = product(importance_environment), fill = importance_environment), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Environment', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('yellow3', 'azure', 'grey69'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+health <- ggplot(data = importance) + geom_mosaic(aes(x = product(importance_health), fill = importance_health), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Health', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('yellow3', 'azure', 'grey69'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+debt <- ggplot(data = importance) + geom_mosaic(aes(x = product(importance_debt), fill = importance_debt), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Debt', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('yellow3', 'azure', 'grey69'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+refugee <- ggplot(data = importance) + geom_mosaic(aes(x = product(importance_refugees), fill = importance_refugees), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Refugees', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('yellow3', 'azure', 'grey69'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+climate <- ggplot(data = importance) + geom_mosaic(aes(x = product(importance_climate), fill = importance_climate), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Climate', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('yellow3', 'azure', 'grey69'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+super <- ggplot(data = importance) + geom_mosaic(aes(x = product(importance_superannuation), fill = importance_superannuation), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Superannuation', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('yellow3', 'azure', 'grey69'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+eco <- ggplot(data = importance) + geom_mosaic(aes(x = product(importance_economy), fill = importance_economy), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), panel.background = element_blank(), legend.position = 'none') + labs(x = 'Economy', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('yellow3', 'azure', 'grey69'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+#Legend creation code adapted from http://www.sthda.com/english/wiki/wiki.php?id_contents=7930
+
+#tmp <- ggplot_gtable(ggplot_build(eco))
+#leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+#legend <- tmp$grobs[[leg]]
+
+#eco <- eco + theme(legend.position = 'none')
+
+#All similar code to below was adapted from http://www.sthda.com/english/articles/24-ggpubr-publication-ready-plots/81-ggplot2-easy-way-to-mix-multiple-graphs-on-the-same-page/ and https://rpkgs.datanovia.com/ggpubr/reference/ggarrange.html 
+
+figure1 <- ggarrange(tax, immigrate, edu, env, health, debt, refugee, climate, super, eco, ncol = 5, nrow = 3, common.legend = TRUE, legend = 'top')
+annotate_figure(figure1, top = text_grob('Voter Response to Importance of Political Issues', size = 14))
+```
+
+
+```{r fig.height=5, fig.width=10}
+tax2 <- ggplot(data = liberal) + geom_mosaic(aes(x = product(importance_taxation), fill = importance_taxation), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Taxation', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+immigrate2 <- ggplot(data = liberal) + geom_mosaic(aes(x = product(importance_immigration), fill = importance_immigration), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Immigration', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+edu2 <- ggplot(data = liberal) + geom_mosaic(aes(x = product(importance_education), fill = importance_education), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Education', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+env2 <- ggplot(data = liberal) + geom_mosaic(aes(x = product(importance_environment), fill = importance_environment), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Environment', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+health2 <- ggplot(data = liberal) + geom_mosaic(aes(x = product(importance_health), fill = importance_health), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Health', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+debt2 <- ggplot(data = liberal) + geom_mosaic(aes(x = product(importance_debt), fill = importance_debt), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Debt', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+refugee2 <- ggplot(data = liberal) + geom_mosaic(aes(x = product(importance_refugees), fill = importance_refugees), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Refugees', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+climate2 <- ggplot(data = liberal) + geom_mosaic(aes(x = product(importance_climate), fill = importance_climate), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Climate', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+super2 <- ggplot(data = liberal) + geom_mosaic(aes(x = product(importance_superannuation), fill = importance_superannuation), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Superannuation', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+eco2 <- ggplot(data = liberal) + geom_mosaic(aes(x = product(importance_economy), fill = importance_economy), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), panel.background = element_blank(), legend.position = 'none') + labs(x = 'Economy', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+
+figure2 <- ggarrange(tax2, immigrate2, edu2, env2, health2, debt2, refugee2, climate2, super2, eco2, ncol = 5, nrow = 3, common.legend = TRUE, legend = 'top')
+annotate_figure(figure2, top = text_grob('Liberal Voter Response to Importance of Political Issues', size = 14))
+```
+
+
+```{r fig.height=5, fig.width=10}
+tax3 <- ggplot(data = labor) + geom_mosaic(aes(x = product(importance_taxation), fill = importance_taxation), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Taxation', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+immigrate3 <- ggplot(data = labor) + geom_mosaic(aes(x = product(importance_immigration), fill = importance_immigration), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Immigration', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+edu3 <- ggplot(data = labor) + geom_mosaic(aes(x = product(importance_education), fill = importance_education), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Education', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+env3 <- ggplot(data = labor) + geom_mosaic(aes(x = product(importance_environment), fill = importance_environment), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Environment', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+health3 <- ggplot(data = labor) + geom_mosaic(aes(x = product(importance_health), fill = importance_health), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Health', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+debt3 <- ggplot(data = labor) + geom_mosaic(aes(x = product(importance_debt), fill = importance_debt), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Debt', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+refugee3 <- ggplot(data = labor) + geom_mosaic(aes(x = product(importance_refugees), fill = importance_refugees), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Refugees', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+climate3 <- ggplot(data = labor) + geom_mosaic(aes(x = product(importance_climate), fill = importance_climate), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Climate', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+super3 <- ggplot(data = labor) + geom_mosaic(aes(x = product(importance_superannuation), fill = importance_superannuation), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Superannuation', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+eco3 <- ggplot(data = labor) + geom_mosaic(aes(x = product(importance_economy), fill = importance_economy), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Economy', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+figure3 <- ggarrange(tax3, immigrate3, edu3, env3, health3, debt3, refugee3, climate3, super3, eco3, ncol = 5, nrow = 3, common.legend = TRUE, legend = 'top')
+annotate_figure(figure3, top = text_grob('Labor Voter Response to Importance of Political Issues', size = 14))
+```
+
+
+```{r fig.height=5, fig.width=10}
+tax4 <- ggplot(data = liberal16) + geom_mosaic(aes(x = product(importance_taxation), fill = importance_taxation), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Taxation', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+immigrate4 <- ggplot(data = liberal16) + geom_mosaic(aes(x = product(importance_immigration), fill = importance_immigration), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Immigration', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+edu4 <- ggplot(data = liberal16) + geom_mosaic(aes(x = product(importance_education), fill = importance_education), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Education', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+env4 <- ggplot(data = liberal16) + geom_mosaic(aes(x = product(importance_environment), fill = importance_environment), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Environment', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+health4 <- ggplot(data = liberal16) + geom_mosaic(aes(x = product(importance_health), fill = importance_health), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Health', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+debt4 <- ggplot(data = liberal16) + geom_mosaic(aes(x = product(importance_debt), fill = importance_debt), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Debt', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+refugee4 <- ggplot(data = liberal16) + geom_mosaic(aes(x = product(importance_refugees), fill = importance_refugees), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Refugees', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+climate4 <- ggplot(data = liberal16) + geom_mosaic(aes(x = product(importance_climate), fill = importance_climate), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Climate', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+super4 <- ggplot(data = liberal16) + geom_mosaic(aes(x = product(importance_superannuation), fill = importance_superannuation), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Superannuation', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+eco4 <- ggplot(data = liberal16) + geom_mosaic(aes(x = product(importance_economy), fill = importance_economy), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Economy', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+figure4 <- ggarrange(tax4, immigrate4, edu4, env4, health4, debt4, refugee4, climate4, super4, eco4, ncol = 5, nrow = 3, common.legend = TRUE, legend = 'top')
+annotate_figure(figure4, top = text_grob('Liberal Voter Response to Importance of Political Issues (2016)', size = 14))
+```
+
+
+```{r fig.height=5, fig.width=10}
+tax5 <- ggplot(data = labor16) + geom_mosaic(aes(x = product(importance_taxation), fill = importance_taxation), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Taxation', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+immigrate5 <- ggplot(data = labor16) + geom_mosaic(aes(x = product(importance_immigration), fill = importance_immigration), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Immigration', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+edu5 <- ggplot(data = labor16) + geom_mosaic(aes(x = product(importance_education), fill = importance_education), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Education', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+env5 <- ggplot(data = labor16) + geom_mosaic(aes(x = product(importance_environment), fill = importance_environment), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Environment', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+health5 <- ggplot(data = labor16) + geom_mosaic(aes(x = product(importance_health), fill = importance_health), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Health', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+debt5 <- ggplot(data = labor16) + geom_mosaic(aes(x = product(importance_debt), fill = importance_debt), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Debt', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+refugee5 <- ggplot(data = labor16) + geom_mosaic(aes(x = product(importance_refugees), fill = importance_refugees), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Refugees', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+climate5 <- ggplot(data = labor16) + geom_mosaic(aes(x = product(importance_climate), fill = importance_climate), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Climate', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+super5 <- ggplot(data = labor16) + geom_mosaic(aes(x = product(importance_superannuation), fill = importance_superannuation), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Superannuation', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+eco5 <- ggplot(data = labor16) + geom_mosaic(aes(x = product(importance_economy), fill = importance_economy), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Economy', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+figure5 <- ggarrange(tax5, immigrate5, edu5, env5, health5, debt5, refugee5, climate5, super5, eco5, ncol = 5, nrow = 3, common.legend = TRUE, legend = 'top')
+annotate_figure(figure5, top = text_grob('Labor Voter Response to Importance of Political Issues (2016)', size = 14))
+```
+
+
+```{r fig.height=5, fig.width=10}
+tax6 <- ggplot(data = liberal19) + geom_mosaic(aes(x = product(importance_taxation), fill = importance_taxation), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Taxation', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+immigrate6 <- ggplot(data = liberal19) + geom_mosaic(aes(x = product(importance_immigration), fill = importance_immigration), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Immigration', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+edu6 <- ggplot(data = liberal19) + geom_mosaic(aes(x = product(importance_education), fill = importance_education), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Education', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+env6 <- ggplot(data = liberal19) + geom_mosaic(aes(x = product(importance_environment), fill = importance_environment), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Environment', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+health6 <- ggplot(data = liberal19) + geom_mosaic(aes(x = product(importance_health), fill = importance_health), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Health', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+debt6 <- ggplot(data = liberal19) + geom_mosaic(aes(x = product(importance_debt), fill = importance_debt), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Debt', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+refugee6 <- ggplot(data = liberal19) + geom_mosaic(aes(x = product(importance_refugees), fill = importance_refugees), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Refugees', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+climate6 <- ggplot(data = liberal19) + geom_mosaic(aes(x = product(importance_climate), fill = importance_climate), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Climate', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+super6 <- ggplot(data = liberal19) + geom_mosaic(aes(x = product(importance_superannuation), fill = importance_superannuation), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Superannuation', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+eco6 <- ggplot(data = liberal19) + geom_mosaic(aes(x = product(importance_economy), fill = importance_economy), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Economy', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('dodgerblue4', 'turquoise3', 'lightskyblue'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+figure6 <- ggarrange(tax6, immigrate6, edu6, env6, health6, debt6, refugee6, climate6, super6, eco6, ncol = 5, nrow = 3, common.legend = TRUE, legend = 'top')
+annotate_figure(figure6, top = text_grob('Liberal Voter Response to Importance of Political Issues (2019)', size = 14))
+```
+
+
+```{r fig.height=5, fig.width=10}
+tax7 <- ggplot(data = labor19) + geom_mosaic(aes(x = product(importance_taxation), fill = importance_taxation), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Taxation', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+immigrate7 <- ggplot(data = labor19) + geom_mosaic(aes(x = product(importance_immigration), fill = importance_immigration), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Immigration', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+edu7 <- ggplot(data = labor19) + geom_mosaic(aes(x = product(importance_education), fill = importance_education), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Education', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+env7 <- ggplot(data = labor19) + geom_mosaic(aes(x = product(importance_environment), fill = importance_environment), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Environment', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+health7 <- ggplot(data = labor19) + geom_mosaic(aes(x = product(importance_health), fill = importance_health), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Health', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+debt7 <- ggplot(data = labor19) + geom_mosaic(aes(x = product(importance_debt), fill = importance_debt), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Debt', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+refugee7 <- ggplot(data = labor19) + geom_mosaic(aes(x = product(importance_refugees), fill = importance_refugees), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), panel.background = element_blank(), legend.position = 'none') + labs(x = 'Refugees', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+climate7 <- ggplot(data = labor19) + geom_mosaic(aes(x = product(importance_climate), fill = importance_climate), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Climate', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+super7 <- ggplot(data = labor19) + geom_mosaic(aes(x = product(importance_superannuation), fill = importance_superannuation), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Superannuation', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+eco7 <- ggplot(data = labor19) + geom_mosaic(aes(x = product(importance_economy), fill = importance_economy), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Economy', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3', 'tomato', 'pink'), labels = c('Extremely Important', 'Quite Important', 'Not Very Important'))
+
+figure7 <- ggarrange(tax7, immigrate7, edu7, env7, health7, debt7, refugee7, climate7, super7, eco7, ncol = 5, nrow = 3, common.legend = TRUE, legend = 'top')
+annotate_figure(figure7, top = text_grob('Labor Voter Response to Importance of Political Issues (2019)', size = 14))
+```
+
+
+```{r fig.height=5, fig.width=10}
+ptax <- ggplot(data = importance) + geom_mosaic(aes(x = product(party_taxation), fill = party_taxation), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Taxation', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3','dodgerblue4','grey69'), labels = c('Labor', 'Liberal', 'No Difference'))
+
+pimmigrate <- ggplot(data = importance) + geom_mosaic(aes(x = product(party_immigration), fill = party_immigration), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Immigration', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3','dodgerblue4','grey69'), labels = c('Labor', 'Liberal', 'No Difference'))
+
+pedu <- ggplot(data = importance) + geom_mosaic(aes(x = product(party_education), fill = party_education), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Education', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3','dodgerblue4','grey69'), labels = c('Labor', 'Liberal', 'No Difference'))
+
+penv <- ggplot(data = importance) + geom_mosaic(aes(x = product(party_environment), fill = party_environment), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Environment', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3','dodgerblue4','grey69'), labels = c('Labor', 'Liberal', 'No Difference'))
+
+phealth <- ggplot(data = importance) + geom_mosaic(aes(x = product(party_health), fill = party_health), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Health', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3','dodgerblue4','grey69'), labels = c('Labor', 'Liberal', 'No Difference'))
+
+pdebt <- ggplot(data = importance) + geom_mosaic(aes(x = product(party_debt), fill = party_debt), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Debt', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3','dodgerblue4','grey69'), labels = c('Labor', 'Liberal', 'No Difference'))
+
+prefugee <- ggplot(data = importance) + geom_mosaic(aes(x = product(party_refugees), fill = party_refugees), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Refugees', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3','dodgerblue4','grey69'), labels = c('Labor', 'Liberal', 'No Difference'))
+
+pclimate <- ggplot(data = importance) + geom_mosaic(aes(x = product(party_climate), fill = party_climate), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Climate', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3','dodgerblue4','grey69'), labels = c('Labor', 'Liberal', 'No Difference'))
+
+psuper <- ggplot(data = importance) + geom_mosaic(aes(x = product(party_superannuation), fill = party_superannuation), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position = 'none', panel.background = element_blank()) + labs(x = 'Superannuation', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3','dodgerblue4','grey69'), labels = c('Labor', 'Liberal', 'No Difference'))
+
+peco <- ggplot(data = importance) + geom_mosaic(aes(x = product(party_economy), fill = party_economy), divider = 'vspine') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), panel.background = element_blank()) + labs(x = 'Economy', y = '', fill = 'Voter Response') + scale_fill_manual(values = c('red3','dodgerblue4','grey69'), labels = c('Labor', 'Liberal', 'No Difference'))
+
+#tmp3 <- ggplot_gtable(ggplot_build(peco))
+#leg3 <- which(sapply(tmp3$grobs, function(x) x$name) == "guide-box")
+#legend3 <- tmp3$grobs[[leg]]
+
+#peco <- peco + theme(legend.position = 'none')
+
+figure8 <- ggarrange(ptax, pimmigrate, pedu, penv, phealth, pdebt, prefugee, pclimate, psuper, peco, ncol = 5, nrow = 3, common.legend = TRUE, legend = 'top')
+annotate_figure(figure8, top = text_grob('Voter Response to Best Party for Handling Particular Issues', size = 14))
+```
+
+Change of Voter Perception Over Time
+```{r fig.width=10, fig.height=15}
+lt <- ggplot(data = liberal) + geom_mosaic(aes(x = product(year, importance_taxation), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Taxation', y = 'Year', title = 'Taxation')
+li <- ggplot(data = liberal) + geom_mosaic(aes(x = product(year, importance_immigration), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Immigration', y = 'Year', title = 'Immigration')
+led <- ggplot(data = liberal) + geom_mosaic(aes(x = product(year, importance_education), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Education', y = 'Year', title = 'Education')
+len <- ggplot(data = liberal) + geom_mosaic(aes(x = product(year, importance_environment), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Environment', y = 'Year', title = 'Environment')
+lh <- ggplot(data = liberal) + geom_mosaic(aes(x = product(year, importance_health), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of health', y = 'Year', title = 'Health')
+ld <- ggplot(data = liberal) + geom_mosaic(aes(x = product(year, importance_debt), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Debt', y = 'Year', title = 'Debt')
+lr <- ggplot(data = liberal) + geom_mosaic(aes(x = product(year, importance_refugees), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Refugees', y = 'Year', title = 'Refugees')
+lc <- ggplot(data = liberal) + geom_mosaic(aes(x = product(year, importance_climate), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Climate', y = 'Year', title = 'Climate')
+ls <- ggplot(data = liberal) + geom_mosaic(aes(x = product(year, importance_superannuation), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Superannuation', y = 'Year', title = 'Superannuation')
+le <- ggplot(data = liberal) + geom_mosaic(aes(x = product(year, importance_economy), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Economy', y = 'Year', title = 'Economy')
+
+figure9 <- ggarrange(lt, li, led, len, lh, ld, lr, lc, ls, le, ncol = 2, nrow = 5, common.legend = TRUE, legend = 'top')
+annotate_figure(figure9, top = text_grob('Liberal Change', size = 14))
+
+lat <- ggplot(data = labor) + geom_mosaic(aes(x = product(year, importance_taxation), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of taxation', y = 'Year', title = 'Taxation')
+lai <- ggplot(data = labor) + geom_mosaic(aes(x = product(year, importance_immigration), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Immigration', y = 'Year', title = 'Immigration')
+laed <- ggplot(data = labor) + geom_mosaic(aes(x = product(year, importance_education), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Education', y = 'Year', title = 'Education')
+laen <- ggplot(data = labor) + geom_mosaic(aes(x = product(year, importance_environment), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Environment', y = 'Year', title = 'Environment')
+lah <- ggplot(data = labor) + geom_mosaic(aes(x = product(year, importance_health), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Health', y = 'Year', title = 'Health')
+lad <- ggplot(data = labor) + geom_mosaic(aes(x = product(year, importance_debt), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Debt', y = 'Year', title = 'Debt')
+lar <- ggplot(data = labor) + geom_mosaic(aes(x = product(year, importance_refugees), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Refugees', y = 'Year', title = 'Refugees')
+lac <- ggplot(data = labor) + geom_mosaic(aes(x = product(year, importance_climate), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Climate', y = 'Year', title = 'Climate')
+las <- ggplot(data = labor) + geom_mosaic(aes(x = product(year, importance_superannuation), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Super', y = 'Year', title = 'Superannuation')
+lae <- ggplot(data = labor) + geom_mosaic(aes(x = product(year, importance_economy), fill = year)) + scale_fill_manual(values = c('tomato','cyan4'), labels = c('2016', '2019')) + labs(x = 'Importance of Economy', y = 'Year', title = 'Economy')
+
+figure10 <- ggarrange(lat, lai, laed, laen, lah, lad, lar, lac, las, lae, ncol = 2, nrow = 5, common.legend = TRUE, legend = 'top')
+annotate_figure(figure10, top = text_grob('Labor Change', size = 14))
+```
+
