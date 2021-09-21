@@ -1,6 +1,7 @@
 
 Initial Code
 ```{r}
+library(readr)
 library(tidyverse)
 library(naniar)
 library(ggplot2)
@@ -8,11 +9,12 @@ library(ggmosaic)
 library(ggpubr)
 library(gridExtra)
 library(ggalluvial)
+library(plyr)
 
 initial <- read_csv("Data/aespanel.csv")
-initial
 restricted <- read_csv("Data/Restricted Data.csv")
-restricted
+australian_postcodes <- read_csv("Data/australian_postcodes.csv")
+PostcodePopulation <- read_csv("Data/PostcodePopulation.csv")
 ```
 
 Improve comprehension of column headings
@@ -29,6 +31,7 @@ Create data sets specialised for issues
 ```{r fig.height=10, fig.width=10}
 importance <- question_data[,c(1:2, 61, 111:132)]
 importance$secondpref <- question_data$secondpref_house
+importance$secondpref[is.na(importance$secondpref)] <- 999
 importance[3:25] <- importance[3:25] %>% replace_with_na_all(condition = ~.x > 500) #https://cran.r-project.org/web/packages/naniar/vignettes/replace-with-na.html 
 importance <- na.omit(importance)
 importance[26] <- importance[26] %>% replace_with_na_all(condition = ~.x >500)
@@ -70,6 +73,7 @@ labor16 <- labor %>% filter(year == 2016)
 
 liberal19 <- liberal %>% filter(year == 2019)
 labor19 <- labor %>% filter(year == 2019)
+
 importance
 ```
 
@@ -107,14 +111,58 @@ Combine demographic and issue data sets
 ```{r}
 combined <- merge(importance, demographics, by = c('Respondent_ID_2016', 'year'))
 
-labor <- combined %>% filter(vote_house == 'Labor'| secondpref == 'Labor')
-labor$vote_house <- c('Labor')
+labor2 <- combined %>% filter(vote_house == 'Labor'| secondpref == 'Labor')
+labor2$vote_house <- c('Labor')
 coalition <- combined %>% filter(vote_house == 'Liberal' | vote_house == 'National' | secondpref == 'Coalition')
 coalition$vote_house <- c('Coalition')
-twoparty <- rbind(labor, coalition)
+twoparty <- rbind(labor2, coalition)
 twoparty <- twoparty[-26]
 twoparty
 
 majorparties <- combined %>% filter(vote_house == 'Liberal' | vote_house == 'Labor' | vote_house == 'National' | vote_house == 'Greens')
+```
+
+```{r}
+AusCodes <- australian_postcodes %>% select(postcode, locality, state, lat, long)
+CodeFreq <- as.data.frame(table(demographics$PCODE))
+colnames(CodeFreq) <- c('postcode', 'frequency')
+
+AusCodes <- merge(AusCodes, CodeFreq, by.x = 'postcode', by.y = 'postcode')
+AusCodes <- merge(AusCodes, PostcodePopulation, by.x = 'postcode', by.y = 'Postcode')
+AusCodes
+```
+
+Datasets for Modelling
+```{r}
+modeldata2016 <- importance %>% filter(year == 2016)
+modeldata2019 <- importance %>% filter(year == 2019)
+
+modeldata2016 <- modeldata2016[,c(3:13)]
+modeldata2019 <- modeldata2019[,c(3:13)]
+
+twopartybase <- importance %>% filter(vote_house == 'Labor'| vote_house == 'Liberal')
+twoparty1 <- twopartybase %>% filter(year == 2016)
+twoparty2 <- twopartybase %>% filter(year == 2019)
+
+modeldata2016 <- modeldata2016 %>% mutate(vote_house = replace(vote_house, c(vote_house != 'Labor' & vote_house != 'Liberal'), 'Other'))
+modeldata2019 <- modeldata2019  %>% mutate(vote_house = replace(vote_house, c(vote_house != 'Labor' & vote_house != 'Liberal'), 'Other'))
+```
+
+Writing CSV files for portfolio
+```{r}
+write.csv(importance, 'Dataframes/importance.csv')
+write.csv(liberal, 'Dataframes/Impliberal.csv')
+write.csv(labor, 'Dataframes/Implabor.csv')
+write.csv(liberal16, 'Dataframes/Impliberal16.csv')
+write.csv(labor16, 'Dataframes/Implabor16.csv')
+write.csv(liberal19, 'Dataframes/Impliberal19.csv')
+write.csv(labor19, 'Dataframes/Implabor19.csv')
+write.csv(demographics, 'Dataframes/demographics.csv')
+write.csv(y2016, 'Dataframes/Demo16.csv')
+write.csv(y2019, 'Dataframes/Demo19.csv')
+write.csv(combined, 'Dataframes/combined.csv')
+write.csv(twoparty, 'Dataframes/twoparty.csv')
+write.csv(majorparties, 'Dataframes/majorparties.csv')
+write.csv(AusCodes, 'Dataframes/Postcode.csv')
 ```
 

@@ -22,7 +22,7 @@ Demographic Percentages Tables
 tsex <- as.data.frame(table(demographics$sex)/nrow(demographics)*100); colnames(tsex) <- c('Sex', 'Percent')
 tquals <- as.data.frame(table(demographics$qualifications)/nrow(demographics)*100); colnames(tquals) <- c('Qualifications', 'Percent')
 tbirthcountry <- as.data.frame(table(demographics$birth_country)/nrow(demographics)*100); colnames(tbirthcountry) <- c('Birth Country', 'Percent')
-treligion <- tbirthcountry <- as.data.frame(table(demographics$religion)/nrow(demographics)*100); colnames(treligion) <- c('Religion', 'Percent')
+treligion <- as.data.frame(table(demographics$religion)/nrow(demographics)*100); colnames(treligion) <- c('Religion', 'Percent')
 tclass <- as.data.frame(table(demographics$social_class)/nrow(demographics)*100); colnames(tclass) <- c('Social Class', 'Percent')
 tliving <- as.data.frame(table(demographics$living_status)/nrow(demographics)*100); colnames(tliving) <- c('Living Status', 'Percent')
 tincome <- as.data.frame(table(demographics$annual_income)/nrow(demographics)*100); colnames(tincome) <- c('Annual Income', 'Percent')
@@ -37,15 +37,15 @@ hist(y2016$age)
 
 Basic demographic analysis between years
 ```{r fig.width=10, fig.height=25}
-sex <- ggplot(demographics) + geom_bar(aes(x = year, fill = sex), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Sex Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Sex')
-qual <- ggplot(demographics) + geom_bar(aes(x = year, fill = qualifications), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Qualification Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Qualifications')
-country <- ggplot(demographics) + geom_bar(aes(x = year, fill = birth_country), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Birth Country Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Birth Country') + scale_fill_discrete(labels = c('Australia', 'Non-English Speaking', 'English-Speaking'))
-religion <- ggplot(demographics) + geom_bar(aes(x = year, fill = religion), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Religion Distribution', y = 'Number of Respondents', x = 'Year', fill = 'religion')
-social <- ggplot(demographics) + geom_bar(aes(x = year, fill = social_class), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Class Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Class')
-living <- ggplot(demographics) + geom_bar(aes(x = year, fill = living_status), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Living Status Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Living Status Type')
-income <- ggplot(demographics) + geom_bar(aes(x = year, fill = annual_income), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Annual Income Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Annual Income Bracket')
+ggsex <- ggplot(demographics) + geom_bar(aes(x = year, fill = sex), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Sex Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Sex')
+ggqual <- ggplot(demographics) + geom_bar(aes(x = year, fill = qualifications), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Qualification Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Qualifications')
+ggcountry <- ggplot(demographics) + geom_bar(aes(x = year, fill = birth_country), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Birth Country Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Birth Country') + scale_fill_discrete(labels = c('Australia', 'Non-English Speaking', 'English-Speaking'))
+ggreligion <- ggplot(demographics) + geom_bar(aes(x = year, fill = religion), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Religion Distribution', y = 'Number of Respondents', x = 'Year', fill = 'religion')
+ggsocial <- ggplot(demographics) + geom_bar(aes(x = year, fill = social_class), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Class Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Class')
+ggliving <- ggplot(demographics) + geom_bar(aes(x = year, fill = living_status), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Living Status Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Living Status Type')
+ggincome <- ggplot(demographics) + geom_bar(aes(x = year, fill = annual_income), position = position_dodge(preserve = 'single')) + labs(title = 'Respondent Annual Income Distribution', y = 'Number of Respondents', x = 'Year', fill = 'Annual Income Bracket')
 
-figuredemo1 <- ggarrange(sex, qual, country, religion, social, living, income, nrow = 8)
+figuredemo1 <- ggarrange(ggsex, ggqual, ggcountry, ggreligion, ggsocial, ggliving, ggincome, nrow = 8)
 annotate_figure(figuredemo1, top = text_grob('Demographic Graphs Between Years', size = 25))
 ```
 
@@ -57,7 +57,7 @@ country2 <- demographics %>% count(birth_country) %>% ggplot(aes(x = reorder(bir
 religion2 <- demographics %>% count(religion) %>% ggplot(aes(x = reorder(religion, -n), y = n, fill = religion)) + geom_bar(stat = 'identity') + labs(title = 'Respondent Religion Distribution', y = 'Number of Respondents', x = element_blank(), fill = 'Religion') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
 social2 <- demographics %>% count(social_class) %>% ggplot(aes(x = reorder(social_class, -n), y = n, fill = social_class)) + geom_bar(stat = 'identity') + labs(title = 'Respondent Social Class Distribution', y = 'Number of Respondents', x = element_blank(), fill = 'Class') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
 living2 <- demographics %>% count(living_status) %>% ggplot(aes(x = reorder(living_status, -n), y = n, fill = living_status)) + geom_bar(stat = 'identity') + labs(title = 'Respondent Living Status Distribution', y = 'Number of Respondents', x = element_blank(), fill = 'Living Status Type') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
-income2 <- income <- ggplot(demographics) + geom_bar(aes(x = annual_income, fill = annual_income)) + labs(title = 'Respondent Annual Income Distribution', y = 'Number of Respondents', x = element_blank(), fill = 'Annual Income Bracket') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+income2 <- ggplot(demographics) + geom_bar(aes(x = annual_income, fill = annual_income)) + labs(title = 'Respondent Annual Income Distribution', y = 'Number of Respondents', x = element_blank(), fill = 'Annual Income Bracket') + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
 
 figuredemo2 <- ggarrange(sex2, qual2, country2, religion2, social2, living2, income2, nrow = 8)
 annotate_figure(figuredemo2, top = text_grob('Demographic Graphs', size = 25))
@@ -97,10 +97,39 @@ ggplot(data = twoqualtable, aes(axis1 = qualifications, axis2 = issue_importance
 ```
 
 Postcode Visualisations
-```{r}
-map("worldHires", ylim = c(-45,-11 ), xlim = c(110,160 ), fill = TRUE, col = "lightgrey", mar = c(4.5, 4, 1, 1))
+```{r fig.width=5, fig.height=5}
+map("worldHires", ylim = c(-45,-11), xlim = c(110,160), fill = TRUE, 
+    col = "lightgrey", mar = c(4.5, 4, 1, 1))
 map.axes()
+map.scale(x = 116.1, ratio = FALSE)
+points(AusCodes$long, AusCodes$lat, cex = AusCodes$frequency/4, 
+    pch = 21, col = "black", bg = rgb(1, 0, 0, 0.5))
+map.cities()
 
-spplot(Freq_by_Suburb, z = 'Frequency', ylim = c(-45,-11 ), xlim = c(110,160 ))
+map("worldHires", ylim = c(-45,-11), xlim = c(110,160), fill = TRUE, 
+    col = "lightgrey", mar = c(4.5, 4, 1, 1))
+map.axes()
+map.scale(x = 116.1, ratio = FALSE)
+points(AusCodes$long, AusCodes$lat, cex = AusCodes$Population/40000, 
+    pch = 21, col = "black", bg = rgb(1, 0, 0, 0.5))
+map.cities()
 ```
+WA
+```{r fig.width=5, fig.height=5}
+map("worldHires", ylim = c(-36,-11), xlim = c(110,128), fill = TRUE, 
+    col = "lightgrey", mar = c(4.5, 4, 1, 1))
+map.axes()
+map.scale(x = 116.1, ratio = FALSE)
+points(AusCodes$long, AusCodes$lat, cex = AusCodes$frequency/4, 
+    pch = 21, col = "black", bg = rgb(1, 0, 0, 0.5))
+
+map("worldHires", ylim = c(-36,-11), xlim = c(110,128), fill = TRUE, 
+    col = "lightgrey", mar = c(4.5, 4, 1, 1))
+map.axes()
+map.scale(x = 116.1, ratio = FALSE)
+points(AusCodes$long, AusCodes$lat, cex = AusCodes$Population/40000, 
+    pch = 21, col = "black", bg = rgb(1, 0, 0, 0.5))
+```
+
+
 

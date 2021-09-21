@@ -1,0 +1,323 @@
+---
+title: "Modelling"
+output: html_document
+---
+
+Required Packages
+```{r}
+library(tidyverse)
+library(naniar)
+library(ggplot2)
+library(ggmosaic)
+library(ggpubr)
+library(gridExtra)
+library(ggalluvial)
+library(sp)
+library(maps)
+library(mapdata)
+library(UPG)
+library(nnet)
+```
+
+Data Manipulation
+```{r}
+set.seed(1234)
+sample1 <- sample(nrow(modeldata2016), nrow(modeldata2016)*0.75)
+sample2 <- sample(nrow(modeldata2019), nrow(modeldata2019)*0.75)
+
+modeldata2016train <- modeldata2016[sample1,]
+modeldata2016test <- modeldata2016[-sample1,]
+modeldata2019train <- modeldata2019[sample2,]
+modeldata2019test <- modeldata2019[-sample2,]
+
+y1 <-  modeldata2016train[,1]
+x1 <-  modeldata2016train[,-1]
+x1[sapply(x1, is.factor)] <- lapply(x1[sapply(x1, is.factor)], as.numeric)
+
+y2 <-  modeldata2019train[,1]
+x2 <-  modeldata2019train[,-1]
+x2[sapply(x2, is.factor)] <- lapply(x2[sapply(x2, is.factor)], as.numeric)
+
+newy1 <- modeldata2016test[,1]
+newx1 <- modeldata2016test[,-1]
+newx1[sapply(newx1, is.factor)] <- lapply(newx1[sapply(newx1, is.factor)], as.numeric)
+
+newy2 <- modeldata2019test[,1]
+newx2 <- modeldata2019test[,-1]
+newx2[sapply(newx2, is.factor)] <- lapply(newx2[sapply(newx2, is.factor)], as.numeric)
+```
+
+Modelling
+```{r}
+model16 <- UPG(y = y1, X = x1, type = 'mnl', draws = 100000, burnin = 20000, A0 = 5, d0 = 0.01, D0 = 0.01, BOOST = FALSE)
+model19 <- UPG(y = y2, X = x2, type = 'mnl', draws = 100000, burnin = 20000, A0 = 5, d0 = 0.01, D0 = 0.01, BOOST = FALSE)
+```
+
+Analysis
+```{r}
+summary(model16)
+plot(model16)
+
+summary(model19)
+plot(model19)
+```
+
+Predictions
+```{r}
+model16pred <- predict(model16, newdata = newx1)
+model19pred <- predict(model19, newdata = newx2)
+
+predictions2016 <- as.data.frame(cbind(model16pred$`Posterior mean`, newy1))
+colnames(predictions2016) <- c('Labor', 'Other', 'Liberal', 'True')
+predictions2016$Predicted <- pmax(predictions2016$Labor, predictions2016$Other, predictions2016$Liberal)
+
+predictions2019 <- as.data.frame(cbind(model19pred$`Posterior mean`, newy2))
+colnames(predictions2019) <- c('Labor', 'Other', 'Liberal', 'True')
+predictions2019$Predicted <- pmax(predictions2019$Labor, predictions2019$Other, predictions2019$Liberal)
+```
+
+```{r}
+for (i in 1:nrow(predictions2016)){
+  if (predictions2016[i,1] == predictions2016[i,5]){
+    predictions2016[i,5] <- 'Labor'
+  }
+}
+for (i in 1:nrow(predictions2016)){
+  if (predictions2016[i,2] == predictions2016[i,5]){
+    predictions2016[i,5] <- 'Other'
+  }
+}
+for (i in 1:nrow(predictions2016)){
+  if (predictions2016[i,3] == predictions2016[i,5]){
+    predictions2016[i,5] <- 'Liberal'
+  }
+}
+
+for (i in 1:nrow(predictions2019)){
+  if (predictions2019[i,1] == predictions2019[i,5]){
+    predictions2019[i,5] <- 'Labor'
+  }
+}
+for (i in 1:nrow(predictions2019)){
+  if (predictions2019[i,2] == predictions2019[i,5]){
+    predictions2019[i,5] <- 'Other'
+  }
+}
+for (i in 1:nrow(predictions2019)){
+  if (predictions2019[i,3] == predictions2019[i,5]){
+    predictions2019[i,5] <- 'Liberal'
+  }
+}
+```
+
+Accuracy
+```{r}
+truevalues16 = 0
+for (i in 1:nrow(predictions2016)){
+  if (predictions2016[i,4] == predictions2016[i,5]){
+    truevalues16 = truevalues16 + 1
+  }
+}
+round((truevalues16/nrow(predictions2016)),3)
+
+truevalues19 = 0
+for (i in 1:nrow(predictions2019)){
+  if (predictions2019[i,4] == predictions2019[i,5]){
+    truevalues19 = truevalues19 + 1
+  }
+}
+round((truevalues19/nrow(predictions2019)),3)
+```
+Significant Variables Model
+```{r}
+set.seed(1234)
+
+newmodeldata2016 <- modeldata2016[,c(1,4,6,7,8,11)]
+newmodeldata2019 <- modeldata2019[,c(1,4,6,8,9,10,11)]
+
+sample1 <- sample(nrow(newmodeldata2016), nrow(newmodeldata2016)*0.75)
+sample2 <- sample(nrow(newmodeldata2019), nrow(newmodeldata2019)*0.75)
+
+modeldata2016train <- newmodeldata2016[sample1,]
+modeldata2016test <- newmodeldata2016[-sample1,]
+modeldata2019train <- newmodeldata2019[sample2,]
+modeldata2019test <- newmodeldata2019[-sample2,]
+
+y1 <-  modeldata2016train[,1]
+x1 <-  modeldata2016train[,-1]
+x1[sapply(x1, is.factor)] <- lapply(x1[sapply(x1, is.factor)], as.numeric)
+
+y2 <-  modeldata2019train[,1]
+x2 <-  modeldata2019train[,-1]
+x2[sapply(x2, is.factor)] <- lapply(x2[sapply(x2, is.factor)], as.numeric)
+
+newy1 <- modeldata2016test[,1]
+newx1 <- modeldata2016test[,-1]
+newx1[sapply(newx1, is.factor)] <- lapply(newx1[sapply(newx1, is.factor)], as.numeric)
+
+newy2 <- modeldata2019test[,1]
+newx2 <- modeldata2019test[,-1]
+newx2[sapply(newx2, is.factor)] <- lapply(newx2[sapply(newx2, is.factor)], as.numeric)
+```
+
+Significant Modelling
+```{r}
+sigmodel16 <- UPG(y = y1, X = x1, type = 'mnl', draws = 100000, burnin = 20000, A0 = 0.05, d0 = 0.01, D0 = 0.01, BOOST = FALSE)
+sigmodel19 <- UPG(y = y2, X = x2, type = 'mnl', draws = 100000, burnin = 20000, A0 = 0.05, d0 = 0.01, D0 = 0.01, BOOST = FALSE)
+```
+
+Significant Analysis
+```{r}
+summary(sigmodel16)
+plot(sigmodel16)
+
+summary(sigmodel19)
+plot(sigmodel19)
+```
+
+Significant Predictions
+```{r}
+sigmodel16pred <- predict(sigmodel16, newdata = newx1)
+sigmodel19pred <- predict(sigmodel19, newdata = newx2)
+
+sigpredictions2016 <- as.data.frame(cbind(sigmodel16pred$`Posterior mean`, newy1))
+colnames(sigpredictions2016) <- c('Labor', 'Other', 'Liberal', 'True')
+sigpredictions2016$Predicted <- pmax(sigpredictions2016$Labor, sigpredictions2016$Other, sigpredictions2016$Liberal)
+
+sigpredictions2019 <- as.data.frame(cbind(sigmodel19pred$`Posterior mean`, newy2))
+colnames(sigpredictions2019) <- c('Labor', 'Other', 'Liberal', 'True')
+sigpredictions2019$Predicted <- pmax(sigpredictions2019$Labor, sigpredictions2019$Other, sigpredictions2019$Liberal)
+```
+
+```{r}
+for (i in 1:nrow(sigpredictions2016)){
+  if (sigpredictions2016[i,1] == sigpredictions2016[i,5]){
+    sigpredictions2016[i,5] <- 'Labor'
+  }
+}
+for (i in 1:nrow(sigpredictions2016)){
+  if (sigpredictions2016[i,2] == sigpredictions2016[i,5]){
+    sigpredictions2016[i,5] <- 'Other'
+  }
+}
+for (i in 1:nrow(sigpredictions2016)){
+  if (sigpredictions2016[i,3] == sigpredictions2016[i,5]){
+    sigpredictions2016[i,5] <- 'Liberal'
+  }
+}
+
+for (i in 1:nrow(sigpredictions2019)){
+  if (sigpredictions2019[i,1] == sigpredictions2019[i,5]){
+    sigpredictions2019[i,5] <- 'Labor'
+  }
+}
+for (i in 1:nrow(sigpredictions2019)){
+  if (sigpredictions2019[i,2] == sigpredictions2019[i,5]){
+    sigpredictions2019[i,5] <- 'Other'
+  }
+}
+for (i in 1:nrow(sigpredictions2019)){
+  if (sigpredictions2019[i,3] == sigpredictions2019[i,5]){
+    sigpredictions2019[i,5] <- 'Liberal'
+  }
+}
+```
+
+Significant Accuracy
+```{r}
+sigtruevalues16 = 0
+for (i in 1:nrow(sigpredictions2016)){
+  if (sigpredictions2016[i,4] == sigpredictions2016[i,5]){
+    sigtruevalues16 = sigtruevalues16 + 1
+  }
+}
+round((sigtruevalues16/nrow(sigpredictions2016)),3)
+
+sigtruevalues19 = 0
+for (i in 1:nrow(sigpredictions2019)){
+  if (sigpredictions2019[i,4] == sigpredictions2019[i,5]){
+    sigtruevalues19 = sigtruevalues19 + 1
+  }
+}
+round((sigtruevalues19/nrow(sigpredictions2019)),3)
+```
+
+Combined Data Manipulation
+```{r}
+y1 <- modeldata2016[,1] 
+x1 <- modeldata2016[,-1]
+x1[sapply(x1, is.factor)] <- lapply(x1[sapply(x1, is.factor)], as.numeric)
+
+newy1 <- modeldata2019[,1]
+newx1 <- modeldata2019[,-1]
+newx1[sapply(newx1, is.factor)] <- lapply(newx1[sapply(newx1, is.factor)], as.numeric)
+```
+
+Combined Modelling
+```{r}
+commodeldata <- UPG(y = y1, X = x1, type = 'mnl', draws = 100000, burnin = 20000, A0 = 0.05, d0 = 0.01, D0 = 0.01, BOOST = FALSE)
+```
+
+Combined Analysis
+```{r}
+summary(commodeldata)
+plot(commodeldata)
+```
+
+Combined Predictions
+```{r}
+commodelpred <- predict(commodeldata, newdata = newx1)
+
+compredictions <- as.data.frame(cbind(commodelpred$`Posterior mean`, newy1))
+colnames(compredictions) <- c('Labor', 'Other', 'Liberal', 'True')
+compredictions$Predicted <- pmax(compredictions$Labor, compredictions$Other, compredictions$Liberal)
+```
+
+```{r}
+for (i in 1:nrow(compredictions)){
+  if (compredictions[i,1] == compredictions[i,5]){
+    compredictions[i,5] <- 'Labor'
+  }
+}
+for (i in 1:nrow(compredictions)){
+  if (compredictions[i,2] == compredictions[i,5]){
+    compredictions[i,5] <- 'Other'
+  }
+}
+for (i in 1:nrow(compredictions)){
+  if (compredictions[i,3] == compredictions[i,5]){
+    compredictions[i,5] <- 'Liberal'
+  }
+}
+```
+
+Combined Accuracy
+```{r}
+comtruevalues = 0
+for (i in 1:nrow(compredictions)){
+  if (compredictions[i,4] == compredictions[i,5]){
+    comtruevalues = comtruevalues + 1
+  }
+}
+round((comtruevalues/nrow(compredictions)),3)
+```
+Convergence Analysis
+```{r fig.width=15, fig.height=5}
+#Black is Labor, Red is Other
+par(mfrow = c(2,5))
+issues <- c('Taxation', 'Immigration', 'Education', 'Environment', 'Debt', 'Health', 'Refugees', 'Climate', 'Superannuation', 'Economy')
+
+for (i in 1:2){
+  for (ii in 1:10){
+    plot(x = 1:1000, y = commodeldata$posterior$beta.post[99001:100000, ii, i], type = 'l', xlab = 'Iteration', ylab = 'Coefficient', main = issues[ii], col = i)
+  }
+}
+
+for (i in 1:2){
+  for (ii in 1:10){
+    hist(commodeldata$posterior$beta.post[99001:100000, ii, i], xlab = 'Coefficient', main = issues[ii], col = i)
+  }
+}
+```
+
+
